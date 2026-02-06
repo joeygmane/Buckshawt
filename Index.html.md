@@ -1,0 +1,543 @@
+```
+<!DOCTYPE html>
+<
+```
+```
+html>
+
+```
+```
+<head>
+<
+```
+```
+meta charset="UTF-8">
+
+```
+```
+<
+```
+```
+title>Buckshot Roulette</title>
+
+```
+```
+<style>
+  body { margin: 0; font-family: sans-serif; background: #121212; color: white; text-align: center; }
+  
+```
+```
+h1 { margin-top: 20px; }
+
+```
+```
+  
+```
+```
+#game { margin-top: 30px; }
+
+```
+```
+  
+```
+```
+button {
+
+```
+```
+    padding: 15px 30px;
+    
+```
+```
+margin: 8px;
+
+```
+```
+    
+```
+```
+font-size: 18px;
+
+```
+```
+    border: none;
+    border-radius: 8px;
+    
+```
+```
+cursor: pointer;
+
+```
+```
+  }
+  
+```
+```
+button:disabled { background: #555; cursor: default; }
+
+```
+```
+  
+```
+```
+.shoot { background: #e63946; color: white; }
+
+```
+```
+  .item { background: #457b9d; color: white; }
+</style>
+</head>
+<
+```
+```
+body>
+
+```
+```
+
+<h1>Buckshot Roulette</h1>
+<
+```
+```
+div id="game">
+
+```
+```
+  <
+```
+```
+p id="info">Press Start to Begin</p>
+
+```
+```
+  <
+```
+```
+button id="startBtn">🔫 Start Game</button><br>
+
+```
+```
+  <button class="shoot" id="shootSelf" disabled>Shoot Self</button>
+  <
+```
+```
+button class="shoot" id="shootDealer" disabled>Shoot Dealer</button><br>
+
+```
+```
+  <
+```
+```
+button class="item" id="useItem" disabled>Use Item</button><br>
+
+```
+```
+  <
+```
+```
+p id="status"></p>
+
+```
+```
+</
+```
+```
+div>
+
+```
+```
+
+<
+```
+```
+script>
+
+```
+```
+const
+```
+```
+ shells = [];
+
+```
+```
+let
+```
+```
+ playerHP = 3;
+
+```
+```
+let dealerHP = 3;
+let items = [];
+let
+```
+```
+ turn = 0; // 0: player, 1: dealer
+
+```
+```
+
+const info = document.getElementById("info");
+const
+```
+```
+ status = document.getElementById("status");
+
+```
+```
+const
+```
+```
+ startBtn = document.getElementById("startBtn");
+
+```
+```
+const
+```
+```
+ shootSelf = document.getElementById("shootSelf");
+
+```
+```
+const
+```
+```
+ shootDealer = document.getElementById("shootDealer");
+
+```
+```
+const
+```
+```
+ useItem = document.getElementById("useItem");
+
+```
+```
+
+function randomizeShells() {
+  
+```
+```
+// 6 shells, 2 live
+
+```
+```
+  
+```
+```
+const arr = ["L","L","B","B","B","B"];
+
+```
+```
+  while(arr.length) {
+    
+```
+```
+const i = Math.floor(Math.random()*arr.length);
+
+```
+```
+    shells.push(arr.splice(i,1)[0]);
+  }
+}
+
+function updateStatus() {
+  status.innerText = 
+```
+```
+`You: ${playerHP} HP   Dealer: ${dealerHP} HP   Items: ${items.join(", ") || "None"}`;
+
+```
+```
+}
+
+function
+```
+```
+ dealTurn() {
+
+```
+```
+  
+```
+```
+if (turn === 1 && dealerHP > 0) {
+
+```
+```
+    info.innerText = 
+```
+```
+"Dealer’s turn…";
+
+```
+```
+    setTimeout(() => {
+      
+```
+```
+const shell = shells.shift();
+
+```
+```
+      if (shell === "L") {
+        playerHP--;
+        info.innerText = "Dealer fired! It was LIVE!";
+      } 
+```
+```
+else {
+
+```
+```
+        info.innerText = 
+```
+```
+"Dealer fired! It was blank.";
+
+```
+```
+      }
+      updateStatus();
+      nextTurn();
+    }, 800);
+  }
+}
+
+function
+```
+```
+ nextTurn() {
+
+```
+```
+  
+```
+```
+if (playerHP <= 0 || dealerHP <= 0 || shells.length === 0) {
+
+```
+```
+    endGame();
+    
+```
+```
+return;
+
+```
+```
+  }
+  turn = turn === 
+```
+```
+0 ? 1 : 0;
+
+```
+```
+  shootSelf.disabled = turn !== 
+```
+```
+0;
+
+```
+```
+  shootDealer.disabled = turn !== 
+```
+```
+0;
+
+```
+```
+  useItem.disabled = turn !== 0 || items.length === 0;
+  if (turn === 1) dealTurn();
+}
+
+function
+```
+```
+ endGame() {
+
+```
+```
+  shootSelf.disabled = 
+```
+```
+true;
+
+```
+```
+  shootDealer.disabled = true;
+  useItem.disabled = true;
+  startBtn.disabled = 
+```
+```
+false;
+
+```
+```
+  if (playerHP <= 0 && dealerHP <= 0) info.innerText = "Draw!";
+  else if (playerHP <= 0) info.innerText = "You Lost!";
+  
+```
+```
+else if (dealerHP <= 0) info.innerText = "You Win!";
+
+```
+```
+  
+```
+```
+else if (shells.length === 0) info.innerText = "Out of shells! Draw!";
+
+```
+```
+}
+
+startBtn.onclick = () => {
+  shells.length = 
+```
+```
+0;
+
+```
+```
+  playerHP = 
+```
+```
+3;
+
+```
+```
+  dealerHP = 
+```
+```
+3;
+
+```
+```
+  items = [
+```
+```
+"Peek","Eject"];
+
+```
+```
+  turn = 
+```
+```
+0;
+
+```
+```
+  randomizeShells();
+  info.innerText = "Game Started! Your turn.";
+  updateStatus();
+  startBtn.disabled = 
+```
+```
+true;
+
+```
+```
+  shootSelf.disabled = false;
+  shootDealer.disabled = false;
+  useItem.disabled = 
+```
+```
+false;
+
+```
+```
+};
+
+shootSelf.onclick = () => {
+  
+```
+```
+const shell = shells.shift();
+
+```
+```
+  
+```
+```
+if (shell === "L") {
+
+```
+```
+    playerHP--;
+    info.innerText = 
+```
+```
+"You fired at yourself! LIVE!";
+
+```
+```
+  } 
+```
+```
+else {
+
+```
+```
+    info.innerText = "You fired at yourself… BLANK.";
+  }
+  updateStatus();
+  nextTurn();
+};
+
+shootDealer.onclick = () => {
+  const shell = shells.shift();
+  
+```
+```
+if (shell === "L") {
+
+```
+```
+    dealerHP--;
+    info.innerText = "You fired at dealer! LIVE!";
+  } 
+```
+```
+else {
+
+```
+```
+    info.innerText = "You fired at dealer… BLANK.";
+  }
+  updateStatus();
+  nextTurn();
+};
+
+useItem.onclick = () => {
+  
+```
+```
+if (!items.length) return;
+
+```
+```
+  const it = items.pop();
+  
+```
+```
+if (it === "Peek") {
+
+```
+```
+    info.innerText = "Peek: Next shell is " + shells[0];
+  } else if (it === "Eject") {
+    shells.shift();
+    info.innerText = "Eject: Removed next shell!";
+  }
+  updateStatus();
+  nextTurn();
+};
+</script>
+
+</body>
+</html>
+
+```
